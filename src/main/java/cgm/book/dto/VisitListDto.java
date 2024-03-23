@@ -3,11 +3,13 @@ package cgm.book.dto;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import lombok.Builder;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
-@Builder
 public record VisitListDto(
     String visitReason, 
-    LocalDateTime time, 
+    
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    LocalDateTime visitTime, 
     UUID visitId) {
 }

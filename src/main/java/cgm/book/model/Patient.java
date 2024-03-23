@@ -4,8 +4,10 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 
-import java.sql.Date;
+import java.time.LocalDate;
 import java.util.UUID;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 
@@ -22,7 +24,8 @@ public class Patient extends PanacheEntityBase {
     public String lastName;
 
     @Column(name = "date_of_birth")
-    public Date dateOfBirth;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    public LocalDate dateOfBirth;
 
     @Column(name = "social_security_number")
     public String socialSecurityNumber;

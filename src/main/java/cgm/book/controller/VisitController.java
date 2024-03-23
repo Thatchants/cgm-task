@@ -2,6 +2,7 @@ package cgm.book.controller;
 
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import jakarta.transaction.Transactional;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.PATCH;
@@ -9,13 +10,14 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.QueryParam;
 
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import cgm.book.dto.VisitDto;
+import com.fasterxml.jackson.core.JsonProcessingException;
+
+import cgm.book.dto.AddVisitDto;
 import cgm.book.dto.VisitListDto;
 import cgm.book.model.Patient;
 import cgm.book.model.Visit;
@@ -27,7 +29,8 @@ public class VisitController {
 
     @POST
     @Transactional
-    public Response createVisit(@QueryParam("patientId") UUID patientId, VisitDto visitDto) {
+    @Path("/{patientId}")
+    public Response createVisit(@PathParam("patientId") UUID patientId, AddVisitDto visitDto) throws JsonProcessingException {
         Patient patient = Patient.findByPatientId(patientId);
         if (patient == null) {
             return Response.status(Response.Status.NOT_FOUND)
@@ -45,12 +48,13 @@ public class VisitController {
         visit.persist();
 
         return Response.status(Response.Status.CREATED)
-                .entity(visit)
+                .entity(JsonUtil.convert(visit))
                 .build();
     }
 
     @GET
-    public Response getVisitsForUser(@QueryParam("patientId") UUID patientId){
+    @Path("/patient/{patientId}")
+    public Response getVisitsForUser(@PathParam("patientId") UUID patientId) throws JsonProcessingException{
         List<Visit> visits = Visit.findAllByPatientId(patientId);
 
         List<VisitListDto> visitListDtos = visits.stream()
@@ -60,13 +64,15 @@ public class VisitController {
                 visit.visitId))
                 .collect(Collectors.toList());
 
-        return Response.status(Response.Status.OK).entity(visitListDtos).build();
+        return Response.status(Response.Status.OK)
+                .entity(JsonUtil.convert(visitListDtos))
+                .build();
     }
 
     @PATCH
     @Path("/{visitId}")
     @Transactional
-    public Response updateVisit(@PathParam("visitId") UUID visitId, VisitDto visitDto) {
+    public Response updateVisit(@PathParam("visitId") UUID visitId, AddVisitDto visitDto) throws JsonProcessingException {
         Visit visit = Visit.findByVisitId(visitId);
         if (visit == null) {
             return Response.status(Response.Status.NOT_FOUND)
@@ -74,19 +80,20 @@ public class VisitController {
                     .build();
         }
 
-        // Update fields from VisitDto
         visit.visitDatetime = visitDto.visitTime();
         visit.homeVisit = visitDto.homeVisit();
         visit.visitReason = visitDto.visitReason();
         visit.familyHistory = visitDto.familyHistory();
         visit.persist();
 
-        return Response.status(Response.Status.OK).entity(visit).build();
+        return Response.status(Response.Status.OK)
+                .entity(JsonUtil.convert(visit))
+                .build();
     }
 
     @GET
     @Path("/{visitId}")
-    public Response getVisitById(@PathParam("visitId") UUID visitId) {
+    public Response getVisitById(@PathParam("visitId") UUID visitId) throws JsonProcessingException {
         Visit visit = Visit.findByVisitId(visitId);
         if (visit == null) {
             return Response.status(Response.Status.NOT_FOUND)
@@ -94,6 +101,8 @@ public class VisitController {
                     .build();
         }
 
-        return Response.status(Response.Status.OK).entity(visit).build();
+        return Response.status(Response.Status.OK)
+            .entity(JsonUtil.convert(visit))
+            .build();
     }
 }
