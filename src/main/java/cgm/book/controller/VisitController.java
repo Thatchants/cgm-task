@@ -29,7 +29,7 @@ public class VisitController {
 
     @POST
     @Transactional
-    @Path("/{patientId}")
+    @Path("/patient/{patientId}")
     public Response createVisit(@PathParam("patientId") UUID patientId, AddVisitDto visitDto) throws JsonProcessingException {
         Patient patient = Patient.findByPatientId(patientId);
         if (patient == null) {
