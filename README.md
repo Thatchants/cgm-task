@@ -1,14 +1,14 @@
 # Quarkus Project CGM - Andrew Book 🚀
 
-The postgresql database was initialized with the script at /scripts/load-database.sql
-
-I'm running the postgres db on a docker container connected to a volume to persist information through application restarts.
-
 Quarkus and Panache allow for a quick development experience!
 
 Changes made are immediately reflected in the development server
 
 Components are accessed statically so there is no need for reflection like in spring boot 🛠️
+
+I'm running the postgres db on a docker container connected to a volume to persist information through application restarts.
+
+The postgresql database was initialized with the script at `/scripts/load-database.sql`
 
 <details>
 <summary><strong>Structure:</strong></summary>
@@ -172,5 +172,6 @@ I would move object mapping and any business logic to a service level.
 
 ##### Unit Tests
 - Due to time, I am skipping unit tests here. I have only tested the application with Postman. QuarkusTest seems to have great shortcuts for endpoint tests that may be more tedious with Spring.
+- The application is not robust and deals with only the happy path and basic 404s right now.
 
 </details>
